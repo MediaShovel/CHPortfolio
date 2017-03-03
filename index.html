@@ -1,0 +1,908 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8" />
+    <title>Chris Hubler's Portfolio</title>
+    <link rel="icon" href="assets/Favicon.png" type="image/gif">
+    <script src="phaser-ce/build/phaser.min.js"></script>
+    <style type="text/css">
+        body {
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+
+<script type="text/javascript">
+
+    //var transparent = false;
+    //var antialias = true;
+
+var game = new Phaser.Game(window.screen.availWidth * window.devicePixelRatio, window.screen.availHeight * window.devicePixelRatio, Phaser.SHOW_ALL, 'Phaserfolio', { preload: preload, create: create, update: update, render: render });
+
+WebFontConfig = {
+
+    active: function () { game.time.events.add(Phaser.Timer.SECOND, createText, this); },
+
+    google: {
+        families: ['Sigmar One', 'Luckiest Guy', 'Bangers']
+    }
+};
+
+function preload() {
+    game.load.script('webfont', '//ajax.googleapis.com/ajax/libs/webfont/1.4.7/webfont.js');
+    game.load.audio('music', ['assets/Shooter_Theme_4.mp3']);
+    game.load.audio('blast', ['assets/BLASTER.wav']);
+    game.load.audio('beep', ['assets/LASER.wav']);
+    game.load.image('sky', 'assets/GreenBlue1.png');
+    game.load.image('mount2', 'assets/Mount2.png');
+    game.load.image('mount1', 'assets/Mount1.png');
+    game.load.image('sun', 'assets/Sun1.png');
+    game.load.image('ground', 'assets/Ground1.png');
+    game.load.image('clouds1', 'assets/Clouds1.png');
+    game.load.image('tree1', 'assets/Tree1.png');
+    game.load.image('star', 'assets/Star1.png');
+    game.load.image('gem', 'assets/RedGem1.png');
+    game.load.image('bullet', 'assets/Bullet1.png');
+    game.load.image('laser', 'assets/Laser1.png');
+    game.load.image('title', 'assets/Title1.png');
+    game.load.image('subtitle', 'assets/SubTitle1.png');
+    game.load.image('design', 'assets/DesignSkills1.png');
+    game.load.image('soft', 'assets/SoftSkills1.png');
+    game.load.image('code', 'assets/CodeSkills1.png');
+    game.load.image('exper', 'assets/Experience1.png');
+    game.load.image('vgs', 'assets/VideoGames1.png');
+    game.load.image('king', 'assets/KingdomHavoc1.png');
+    game.load.image('smash', 'assets/SmashyTank1.png');
+    game.load.image('web', 'assets/WebDesign1.png');
+    game.load.image('qbj', 'assets/QBJr.png');
+    game.load.image('valley', 'assets/Valley1.png');
+    game.load.image('contact', 'assets/ContactForm1.png');
+    game.load.image('play', 'assets/PlayButton1.png');
+    game.load.image('click', 'assets/ClickFire1.png');
+    //game.load.image('enemyBullet', 'assets/EnemyBullet1.png');
+    game.load.image('spark1', 'assets/BulletPart1.png');
+    game.load.image('spark2', 'assets/BulletPart2.png');
+    game.load.image('spark3', 'assets/BulletPart3.png');
+    game.load.image('spark4', 'assets/BulletPart4.png');
+    game.load.image('spark5', 'assets/BulletPart4.png');
+    game.load.image('enemyBullet2', 'assets/Bullet2.png');
+    game.load.image('enemyBullet3', 'assets/Bullet2.png');
+    game.load.spritesheet('plane', 'assets/PaperAirplane1.png', 256, 256);
+    game.load.spritesheet('enemy', 'assets/Enemy1.png', 256, 256);
+    game.load.spritesheet('enemy2', 'assets/Enemy2.png', 512, 512);
+    game.load.spritesheet('blast', 'assets/Explosion1.png', 256, 256);
+    game.load.spritesheet('pickup', 'assets/LaserPickup1.png', 128, 128);
+    game.load.spritesheet('enemyBullet', 'assets/ebulletsheet1.png', 32, 32);
+    game.load.spritesheet('pause', 'assets/PauseButton1.png', 128, 128);
+    game.load.spritesheet('flag', 'assets/Flag1.png', 128, 128);
+}
+
+var player;
+var enemies;
+var enemies2;
+var explosions;
+var explosions2;
+var platforms;
+var cursors;
+var bullet;
+var enemyBullet;
+var enemyBullet2;
+var enemyBullet3;
+var firingTimer = 0;
+var firingTimer2 = 0;
+var livingEnemies = [];
+var livingEnemies2 = [];
+var ground;
+var clouds1;
+var stars;
+var gems;
+var score = 0;
+var scoreText;
+var text = null;
+var jump = 0;
+var jumpbool = false;
+var mount1;
+var mount2;
+var sun;
+var sky;
+var shooter;
+var shooter2;
+var title;
+var subtitle;
+var flag;
+var flag2;
+var flag3;
+var flag4;
+var flag5;
+var flag6;
+var laser;
+var laserTap;
+var pauseButton;
+var play;
+var click;
+var vgs;
+var king;
+var smash;
+var web;
+var qbj;
+var valley;
+var tween;
+var tween2;
+var tween3;
+var tween4;
+var tween5;
+var tween6;
+var tween7;
+var tween8;
+var tween9;
+var tween10;
+var design;
+var soft;
+var code;
+var contact;
+var music;
+var blast;
+var beep;
+
+this.game.load.script('webfont', '//ajax.googleapis.com/ajax/libs/webfont/1.4.7/webfont.js');
+
+function create() {
+
+    this.scale.pageAlignHorizontally = true;
+    this.scale.pageAlignVertically = true;
+
+    game.physics.startSystem(Phaser.Physics.ARCADE);
+    //game.scale.fullScreenScaleMode = Phaser.ScaleManager.EXACT_FIT;
+    //game.scale.startFullScreen(true);
+    
+    game.world.setBounds(0, 0, 2000, 1000);
+
+    game.paused = true;
+
+    sky = game.add.sprite(-256, -256, 'sky');
+    sky.scale.setTo(320, 64);
+
+    sun = game.add.sprite(3100, game.world.height - 800, 'sun');
+    game.physics.arcade.enable(sun);
+    sun.anchor.setTo(0.5, 0.5);
+    sun.scale.setTo(0.95, 0.95);
+
+    design = game.add.sprite(1900, game.world.height - 790, 'design');
+    game.physics.arcade.enable(design);
+    design.scale.setTo(1.2, 1.2);
+
+    flag = game.add.sprite(2092, game.world.height - 723, 'flag');
+    game.physics.arcade.enable(flag);
+    flag.anchor.setTo(0.5, 0.5);
+    flag.scale.setTo(0.9, 0.9);
+    flag.animations.add('flap', [0, 1, 2, 3, 4, 5, 6, 7], 16, true);
+    flag.animations.play('flap');
+
+    flag2 = game.add.sprite(3052, game.world.height - 723, 'flag');
+    game.physics.arcade.enable(flag2);
+    flag2.anchor.setTo(0.5, 0.5);
+    flag2.scale.setTo(0.9, 0.9);
+    flag2.animations.add('flap', [0, 1, 2, 3, 4, 5, 6, 7], 16, true);
+    flag2.animations.play('flap');
+
+    soft = game.add.sprite(4000, game.world.height - 790, 'soft');
+    game.physics.arcade.enable(soft);
+    soft.scale.setTo(1.2, 1.2);
+
+    flag3 = game.add.sprite(4192, game.world.height - 723, 'flag');
+    game.physics.arcade.enable(flag3);
+    flag3.anchor.setTo(0.5, 0.5);
+    flag3.scale.setTo(0.9, 0.9);
+    flag3.animations.add('flap', [0, 1, 2, 3, 4, 5, 6, 7], 16, true);
+    flag3.animations.play('flap');
+
+    flag4 = game.add.sprite(5152, game.world.height - 723, 'flag');
+    game.physics.arcade.enable(flag4);
+    flag4.anchor.setTo(0.5, 0.5);
+    flag4.scale.setTo(0.9, 0.9);
+    flag4.animations.add('flap', [0, 1, 2, 3, 4, 5, 6, 7], 16, true);
+    flag4.animations.play('flap');
+
+    code = game.add.sprite(6000, game.world.height - 790, 'code');
+    game.physics.arcade.enable(code);
+    code.scale.setTo(1.2, 1.2);
+
+    flag5 = game.add.sprite(6192, game.world.height - 723, 'flag');
+    game.physics.arcade.enable(flag5);
+    flag5.anchor.setTo(0.5, 0.5);
+    flag5.scale.setTo(0.9, 0.9);
+    flag5.animations.add('flap', [0, 1, 2, 3, 4, 5, 6, 7], 16, true);
+    flag5.animations.play('flap');
+
+    flag6 = game.add.sprite(7152, game.world.height - 723, 'flag');
+    game.physics.arcade.enable(flag6);
+    flag6.anchor.setTo(0.5, 0.5);
+    flag6.scale.setTo(0.9, 0.9);
+    flag6.animations.add('flap', [0, 1, 2, 3, 4, 5, 6, 7], 16, true);
+    flag6.animations.play('flap');
+
+    mount2 = game.add.sprite(2700, game.world.height - 700, 'mount2');
+    game.physics.arcade.enable(mount2);
+
+    mount1 = game.add.sprite(3000, game.world.height - 700, 'mount1');
+    game.physics.arcade.enable(mount1);
+
+    mount3 = game.add.sprite(11800, game.world.height - 700, 'mount2');
+    game.physics.arcade.enable(mount3);
+
+    ground = game.add.tileSprite(-64, game.world.height - 200, 9800, 255, 'ground');
+
+    clouds1 = game.add.tileSprite(-64, game.world.height - 1034, 9800, 255, 'clouds1');
+
+    tree1 = game.add.sprite(1100, game.world.height - 496, 'tree1');
+    game.physics.arcade.enable(tree1);
+    tree1.scale.setTo(1.2, 1.2);
+
+    tree2 = game.add.sprite(240, game.world.height - 396, 'tree1');
+    game.physics.arcade.enable(tree2);
+    tree2.scale.setTo(.8, .8);
+
+    tree3 = game.add.sprite(5600, game.world.height - 396, 'tree1');
+    game.physics.arcade.enable(tree3);
+    tree3.scale.setTo(.8, .8);
+
+    tree4 = game.add.sprite(13000, game.world.height - 446, 'tree1');
+    game.physics.arcade.enable(tree4);
+    //tree4.scale.setTo(.8, .8);
+
+    pauseButton = game.add.button(1740, game.world.height - 980, 'pause', actionOnClick, this, 1, 0);
+    pauseButton.scale.setTo(0.8, 0.8);
+    //pausebutton = game.add.button(1740, game.world.height - 980, 'pause', actionOnClick, this, 1, 0);
+
+    pauseButton.onInputOver.add(over, this);
+    pauseButton.onInputOut.add(out, this);
+
+    title = game.add.sprite(960, game.world.height - 640, 'title');
+    title.anchor.setTo(0.5, 0.5);
+    title.scale.setTo(0.6, 0.6);
+
+    click = game.add.sprite(960, game.world.height - 244, 'click');
+    click.anchor.setTo(0.5, 0.5);
+    //click.scale.setTo(0.6, 0.6);
+    game.physics.arcade.enable(click);
+
+    subtitle = game.add.sprite(1080, game.world.height - 1200, 'subtitle');
+    subtitle.anchor.setTo(0.5, 0.5);
+    //subtitle.scale.setTo(0.6, 0.6);
+    game.physics.arcade.enable(subtitle);
+
+    exper = game.add.sprite(7800, game.world.height - 1200, 'exper');
+    exper.anchor.setTo(0.5, 0.5);
+    //exper.scale.setTo(0.6, 0.6);
+    game.physics.arcade.enable(exper);
+
+    vgs = game.add.sprite(8600, game.world.height - 1250, 'vgs');
+    vgs.anchor.setTo(0.5, 0.5);
+    //vgs.scale.setTo(0.6, 0.6);
+    game.physics.arcade.enable(vgs);
+
+    king = game.add.sprite(9200, game.world.height - 1400, 'king');
+    king.anchor.setTo(0.5, 0.5);
+    king.scale.setTo(0.6, 0.6);
+    game.physics.arcade.enable(king);
+
+    smash = game.add.sprite(10000, game.world.height - 1400, 'smash');
+    smash.anchor.setTo(0.5, 0.5);
+    smash.scale.setTo(0.6, 0.6);
+    game.physics.arcade.enable(smash);
+
+    web = game.add.sprite(10860, game.world.height - 1200, 'web');
+    web.anchor.setTo(0.5, 0.5);
+    //web.scale.setTo(0.6, 0.6);
+    game.physics.arcade.enable(web);
+
+    qbj = game.add.sprite(11400, game.world.height - 1400, 'qbj');
+    qbj.anchor.setTo(0.5, 0.5);
+    qbj.scale.setTo(0.6, 0.6);
+    game.physics.arcade.enable(qbj);
+
+    valley = game.add.sprite(10900, game.world.height - 1300, 'valley');
+    valley.anchor.setTo(0.5, 0.5);
+    valley.scale.setTo(0.6, 0.6);
+    game.physics.arcade.enable(valley);
+
+    contact = game.add.sprite(12600, game.world.height - 570, 'contact');
+    contact.anchor.setTo(0.5, 0.5);
+    contact.scale.setTo(0.8, 0.8);
+    game.physics.arcade.enable(contact);
+
+    play = game.add.sprite(960, game.world.height - 360, 'play');
+    play.anchor.setTo(0.5, 0.5);
+    play.scale.setTo(1.2, 1.2);
+
+    //var ledge = platforms.create(4000, 2000, 'ground');
+    //ledge.body.immovable = true;
+
+    //ledge = platforms.create(2000, 2800, 'ground');
+    //ledge.body.immovable = true;
+
+    //platforms.scale.setTo(.5, .5);
+
+    player = game.add.sprite(620, game.world.height - 400, 'plane');
+    player.scale.setTo(0.6, 0.6);
+
+    //WEAPONS//////////////
+    weapon = game.add.weapon(80, 'bullet');
+    weapon.bulletKillType = Phaser.Weapon.KILL_CAMERA_BOUNDS;
+    weapon.bulletAngleOffset = 0;
+    weapon.bulletSpeed = 1100;
+    weapon.fireRate = 110;
+    weapon.bulletAngleVariance = 4;
+    weapon.trackSprite(player, 80, 0, true);
+
+    weapon2 = game.add.weapon(160, 'enemyBullet');
+    weapon2.addBulletAnimation('shot', [0, 1, 2, 3], 16, true);
+    weapon2.bulletKillType = Phaser.Weapon.KILL_CAMERA_BOUNDS;
+    weapon2.bulletAngleOffset = 0;
+    weapon2.bulletSpeed = -500;
+    weapon2.fireRate = 5;
+    weapon2.bulletAngleVariance = 12;
+    weapon2.trackSprite(shooter, 0, 0, true);
+
+    weapon3 = game.add.weapon(200, 'laser');
+    weapon3.bulletKillType = Phaser.Weapon.KILL_CAMERA_BOUNDS;
+    weapon3.bulletAngleOffset = 0;
+    weapon3.bulletSpeed = 2100;
+    weapon3.fireRate = 6;
+    weapon3.bulletAngleVariance = 0;
+    weapon3.trackSprite(player, 80, 0, true);
+
+    weapon4 = game.add.weapon(160, 'enemyBullet2');
+    weapon4.bulletKillType = Phaser.Weapon.KILL_CAMERA_BOUNDS;
+    weapon4.bulletAngleOffset = 180;
+    weapon4.bulletSpeed = -800;
+    weapon4.fireRate = 50;
+    weapon4.bulletAngleVariance = 1;
+    weapon4.trackSprite(shooter2, 0, 0, true);
+
+    weapon5 = game.add.weapon(160, 'enemyBullet3');
+    weapon5.bulletKillType = Phaser.Weapon.KILL_CAMERA_BOUNDS;
+    weapon5.bulletAngleOffset = 180;
+    weapon5.bulletSpeed = -800;
+    weapon5.fireRate = 50;
+    weapon5.bulletAngleVariance = 1;
+    weapon5.trackSprite(shooter2, 0, 0, true);
+    
+    spark = game.add.weapon(8, 'spark1');
+    spark.bulletKillType = Phaser.Weapon.KILL_DISTANCE;
+    spark.trackSprite(player, 78, 0, true);
+    spark.bulletAngleOffset = 0;
+    spark.bulletSpeed = 1;
+    spark.fireRate = 2;
+    spark.bulletAngleVariance = 15;
+    
+    spark2 = game.add.weapon(6, 'spark2');
+    spark2.bulletKillType = Phaser.Weapon.KILL_DISTANCE;
+    spark2.trackSprite(player, 78, 0, true);
+    spark2.bulletAngleOffset = 0;
+    spark2.bulletSpeed = 1;
+    spark2.fireRate = 3;
+    spark2.bulletAngleVariance = 6;
+
+    spark3 = game.add.weapon(6, 'spark3');
+    spark3.bulletKillType = Phaser.Weapon.KILL_DISTANCE;
+    spark3.trackSprite(player, 78, 0, true);
+    spark3.bulletAngleOffset = 0;
+    spark3.bulletSpeed = 1;
+    spark3.fireRate = 4;
+    spark3.bulletAngleVariance = 14;
+
+    spark4 = game.add.weapon(6, 'spark4');
+    spark4.bulletKillType = Phaser.Weapon.KILL_DISTANCE;
+    spark4.trackSprite(shooter2, -90, 0, true);
+    spark4.bulletAngleOffset = 180;
+    spark4.bulletSpeed = 1;
+    spark4.fireRate = 4;
+    spark4.bulletAngleVariance = 6;
+
+    spark5 = game.add.weapon(6, 'spark5');
+    spark5.bulletKillType = Phaser.Weapon.KILL_DISTANCE;
+    spark5.trackSprite(shooter2, -90, 0, true);
+    spark5.bulletAngleOffset = 180;
+    spark5.bulletSpeed = 1;
+    spark5.fireRate = 4;
+    spark5.bulletAngleVariance = 6;
+
+    bullet = weapon.bullets;
+    laser = weapon3.bullets;
+
+    enemyBullet = weapon2.bullets;
+    enemyBullet2 = weapon4.bullets;
+    enemyBullet3 = weapon5.bullets;
+    enemySpark = spark4.bullets;
+    enemySpark2 = spark5.bullets;
+
+    //Player////////////
+    game.physics.arcade.enable(player);
+    player.anchor.setTo(0.5, 0.5);
+    player.body.setCircle(32, 100, 100);
+    player.body.collideWorldBounds = true;
+    player.animations.add('fly', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15], 12, true);
+    player.animations.play('fly');
+    player.SPEED = 250;
+    player.TURN_RATE = 3;
+
+    //LaserPickup////////
+    laserPickup = game.add.sprite(7800, game.world.height - 400, 'pickup');
+    laserPickup.animations.add('spin', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15], 24, true);
+    laserPickup.animations.play('spin');
+    game.physics.arcade.enable(laserPickup);
+    laserPickup.scale.setTo(0.8, 0.8);
+    laserPickup.anchor.setTo(0.5, 0.5);
+    laserPickup.body.setCircle(32, 64, 64);
+    laserPickup.body.velocity.x = -120;
+    laserPickup.SPEED = 1200;
+    laserBounceTween();
+
+    //Enemy///////////
+    enemies = game.add.group();
+    enemies.enableBody = true;
+    enemies.physicsBodyType = Phaser.Physics.ARCADE;
+    
+    createEnemies();
+
+    enemies2 = game.add.group();
+    enemies2.enableBody = true;
+    enemies2.physicsBodyType = Phaser.Physics.ARCADE;
+
+    createEnemies2();
+
+    //EXPLOSIONS////////
+    explosions = game.add.group();
+    explosions.createMultiple(30, 'blast');
+    explosions.forEach(setupEnemy, this);
+
+    explosions2 = game.add.group();
+    explosions2.createMultiple(30, 'blast');
+    explosions2.forEach(setupEnemy2, this);
+
+    //Stars///////////
+    stars = game.add.group();
+    stars.enableBody = true;
+
+    gems = game.add.group();
+    gems.enableBody = true;
+
+    //CAMERA//////////
+    //game.camera.follow(player);//, Phaser.Camera.FOLLOW_LOCKON, 0.1, 0.1);
+    //game.camera.deadzone = new Phaser.Rectangle(600, 300, 300, 300);
+
+    for (var i = 0; i < 6; i++)
+    {
+        var star = stars.create(i * 2300, 100, 'star');
+        star.body.setCircle(32, 8, 8);
+        star.body.velocity.x = -125;
+    }
+
+    stars.x = 3400;
+    stars.y = 340;
+
+    for (var j = 0; j < 8; j++) {
+        var gem = gems.create(j * 1800, 80, 'gem');
+        gem.body.setCircle(32, 8, 8);
+        gem.body.velocity.x = -120;
+    }
+
+    gems.x = 2900;
+    gems.y = 280;
+
+    stars.SPEED = 900;
+    starBounceTween();
+
+    gems.SPEED = 800;
+    gemBounceTween();
+
+    enemies2.SPEED = 3400;
+    en2BounceTween();
+
+    tween = game.add.tween(title.scale).to({ x: 0, y: 0 }, 700, Phaser.Easing.Elastic.In, true);
+    tween2 = game.add.tween(play).to({ y: (game.world.height - 360) - (play.height - 640) }, 600, Phaser.Easing.Elastic.In, true);
+    tween3 = game.add.tween(subtitle).to({ y: (game.world.height - 940) - (subtitle.height - 400) }, 1800, Phaser.Easing.Elastic.InOut, true);
+    tween2.onComplete.add(ExperienceTween, this);
+    
+    //SCORE///////////
+    scoreText = game.add.text(50, 25, 'SCORE: 0', { fontSize: '44px', fill: '#666666', spacing: '5' });
+    scoreText.font = 'Luckiest Guy';
+    scoreText.padding.set(10, 10);
+    //scoreText.stroke = '#ffffff';
+    //scoreText.strokeThickness = 1;
+    scoreText.fixedToCamera = true;
+    //scoreText.cameraOffset.setTo(15, 15);
+    scoreText.stroke = '#FFFFFF';
+    scoreText.strokeThickness = 2;
+    scoreText.setShadow(3, 3, 'rgba(0,0,0,0.3)', 1);
+
+    //MUSIC/////////////
+    music = game.add.audio('music');
+    music.volume = 0.4;
+    music.play();
+    blast = game.add.audio('blast');
+    blast.volume = 0.2;
+    beep = game.add.audio('beep');
+    beep.volume = 0.5;
+
+    //INPUT/////////////
+    game.input.mouse.capture = true;
+    cursors = game.input.keyboard.createCursorKeys();
+    fireButton = this.input.keyboard.addKey(Phaser.KeyCode.SPACEBAR);
+
+    game.input.onDown.add(unpause, self);
+}
+
+function createEnemies() {
+
+    for (var y = 0; y < 3; y++) {
+        for (var x = 0; x < 9; x++) {
+            var enemy = enemies.create(x * 2200, y * 150, 'enemy');
+            enemy.anchor.setTo(0.5, 0.5);
+            enemy.scale.setTo(0.6, 0.6);
+            enemy.body.setCircle(44, 100, 140);
+            enemy.animations.add('float', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15], 17, true);
+            enemy.play('float');
+            enemy.body.velocity.x = game.rnd.integerInRange(-190, -220);
+            enemy.body.velocity.y = game.rnd.integerInRange(-4, 4);
+            
+        }
+    }
+    enemies.x = 6100;
+    enemies.y = 205;
+}
+
+function createEnemies2() {
+
+    for (var y = 0; y < 1; y++) {
+        for (var x = 0; x < 4; x++) {
+            var enemy2 = enemies2.create(x * 2700, y * 40, 'enemy2');
+            enemy2.anchor.setTo(0.5, 0.5);
+            enemy2.scale.setTo(0.5, 0.5);
+            enemy2.body.setCircle(128, 150, 150);
+            enemy2.animations.add('enemyfly', [0, 1, 2, 3], 12, true);
+            enemy2.animations.play('enemyfly');
+            enemy2.body.velocity.x = game.rnd.integerInRange(-150, -170);
+            enemy2.body.velocity.y = game.rnd.integerInRange(-2, 2);
+
+        }
+    }
+    enemies2.x = 8100;
+    enemies2.y = 250;
+}
+
+function setupEnemy(enemy) {
+    enemy.anchor.x = 0.4;
+    enemy.anchor.y = 0.4;
+    enemy.animations.add('blast', [0, 1, 2, 3, 4, 5, 6, 7], 12, true);
+}
+
+function setupEnemy2(enemy2) {
+    enemy2.anchor.x = 0.1;
+    enemy2.anchor.y = 0.1;
+    enemy2.animations.add('blast', [0, 1, 2, 3, 4, 5, 6, 7], 12, true);
+}
+
+function update() {
+
+    game.physics.arcade.collide(player, platforms);
+    game.physics.arcade.collide(stars, platforms);
+    game.physics.arcade.collide(player, enemies, collisionthis, null, this);
+    game.physics.arcade.collide(enemies, enemies, collisionthis, null, this);
+    game.physics.arcade.overlap(bullet, enemies, collisionHandler, null, this);
+    game.physics.arcade.overlap(laser, enemies, collisionHandler, null, this);
+    game.physics.arcade.overlap(bullet, enemies2, collisionHandler2, null, this);
+    game.physics.arcade.overlap(laser, enemies2, collisionHandler, null, this);
+    game.physics.arcade.overlap(enemyBullet, player, enemyStrike, null, this);
+    game.physics.arcade.overlap(enemyBullet2, player, enemyStrike2, null, this);
+    game.physics.arcade.overlap(player, stars, collectStar, null, this);
+    game.physics.arcade.overlap(player, gems, collectStar, null, this);
+    game.physics.arcade.overlap(player, laserPickup, collectLaser, null, this);
+    
+    clouds1.autoScroll(-90, 0, 600, 0.1);
+    ground.autoScroll(-90, 0, 600, 0.1);
+   
+    tree1.body.velocity.x = -90;
+    tree2.body.velocity.x = -90;
+    tree3.body.velocity.x = -90;
+    tree4.body.velocity.x = -90;
+    design.body.velocity.x = -90;
+    soft.body.velocity.x = -90;
+    code.body.velocity.x = -90;
+    flag.body.velocity.x = -90;
+    flag2.body.velocity.x = -90;
+    flag3.body.velocity.x = -90;
+    flag4.body.velocity.x = -90;
+    flag5.body.velocity.x = -90;
+    flag6.body.velocity.x = -90;
+    mount1.body.velocity.x = -77;
+    mount2.body.velocity.x = -70;
+    mount3.body.velocity.x = -90;
+    sun.body.velocity.x = -40;
+    subtitle.body.velocity.x = -90;
+    exper.body.velocity.x = -90;
+    vgs.body.velocity.x = -90;
+    king.body.velocity.x = -90;
+    smash.body.velocity.x = -90;
+    web.body.velocity.x = -90;
+    qbj.body.velocity.x = -90;
+    valley.body.velocity.x = -90;
+    contact.body.velocity.x = -90;
+    click.body.velocity.x = -90;
+    
+    //PLAYER SHOOTING///////////////////////////
+    if (fireButton.isDown | game.input.activePointer.leftButton.isDown && contact.x >= game.world.width / 2) {
+        if (laserTap == true) {
+            weapon3.fire();
+            spark3.fire();
+            if (!beep.isPlaying) {
+                beep.play();
+            }
+        }
+        else {
+            weapon.fire();
+            spark.fire();
+            spark2.fire();
+            if (!blast.isPlaying) {
+                blast.play();
+            }
+        }
+    }
+
+    //PLAYER MOVEMENT/////////////////////////////
+    var targetAngle = game.math.angleBetween(
+        player.x, player.y,
+        game.input.activePointer.x, game.input.activePointer.y
+    );
+
+    targetAngle += game.math.degToRad(player.rotation);
+  
+    if (player.rotation !== targetAngle) {
+        
+        var delta = targetAngle - player.rotation;
+
+        if (delta > Math.PI) delta -= Math.PI * 2;
+        if (delta < -Math.PI) delta += Math.PI * 2;
+
+        if (delta > 0) {
+            player.angle += player.TURN_RATE;
+        } else {
+            player.angle -= player.TURN_RATE;
+        }
+
+        if (Math.abs(delta) < this.game.math.degToRad(player.TURN_RATE)) {
+            player.rotation = targetAngle;
+        }
+    }
+    
+    player.body.velocity.x = Math.cos(player.rotation) * player.SPEED;
+    player.body.velocity.y = Math.sin(player.rotation) * player.SPEED;
+
+    if(contact.x <= game.world.width/2){
+      player.animations.stop();
+      player.body.velocity = 0;
+      player.angle = 0;
+      player.frame = 0;
+      player.alpha = 0;
+
+      clouds1.stopScroll();
+      ground.stopScroll();
+      contact.body.velocity = 0;
+      mount3.body.velocity = 0;
+      tree4.body.velocity = 0;
+      
+    }
+    
+    //ENEMY SHOOTING//////////////////////////////
+    if (game.time.now > firingTimer) {
+        enemyFires();
+    }
+
+    if (game.time.now > firingTimer2) {
+        enemyFires2();
+    }
+
+}
+
+    //ENEMY ENEMY COLLISON////////////////////////
+function collisionthis(enemy, enemy) {
+    enemy.body.velocity.x = game.rnd.integerInRange(-190, -220);
+}
+
+function enemyStrike(player, enemyBullet) {
+
+    enemyBullet.kill();
+
+    game.camera.shake(0.035, 150);
+    if (score > 0) {
+        score -= 10000;
+        scoreText.text = 'SCORE: ' + score;
+    } else {
+        score = 0;
+        scoreText.text = 'SCORE: ' + score;
+    }
+}
+
+function enemyStrike2(player, enemyBullet2) {
+
+    enemyBullet2.kill();
+
+    game.camera.shake(0.035, 150);
+    if (score > 0) {
+        score -= 25000;
+        scoreText.text = 'SCORE: ' + score;
+    } else {
+        score = 0;
+        scoreText.text = 'SCORE: ' + score;
+    }
+}
+
+function collisionHandler(bullet, enemy) {
+
+    bullet.kill();
+    enemy.kill();
+
+    score += 40000;
+    scoreText.text = 'SCORE: ' + score;
+
+    var explosion = explosions.getFirstExists(false);
+    explosion.reset(enemy.body.x, enemy.body.y);
+    explosion.play('blast', 30, false, true);
+}
+
+function collisionHandler2(bullet, enemy2) {
+
+    bullet.kill();
+    enemy2.kill();
+
+    score += 100000;
+    scoreText.text = 'SCORE: ' + score;
+
+    var explosion = explosions.getFirstExists(false);
+    explosion.reset(enemy2.body.x, enemy2.body.y);
+    explosion.play('blast', 30, false, true);
+}
+
+function collectLaser(player, laserPickup) {
+    laserPickup.kill();
+    laserTap = true;
+}
+
+function enemyFires() {
+        livingEnemies.length = 0;
+        enemies.forEachAlive(function (enemy) {
+        livingEnemies.push(enemy);
+    });
+
+    if (enemyBullet && livingEnemies.length > 0) {
+        var random = game.rnd.integerInRange(0, livingEnemies.length - 1);
+        var shooter = livingEnemies[random];
+        weapon2.trackSprite(shooter, 0, 0, true);
+        weapon2.fire();
+        firingTimer = game.time.now + 10;
+    }
+}
+
+function enemyFires2() {
+    livingEnemies2.length = 0;
+    enemies2.forEachAlive(function (enemy2) {
+        livingEnemies2.push(enemy2);
+    });
+
+    if (enemyBullet2 && livingEnemies2.length > 0) {
+        var random2 = game.rnd.integerInRange(0, livingEnemies2.length - 1);
+        var shooter2 = livingEnemies2[random2];
+
+        weapon4.trackSprite(shooter2, -139, 88, true);
+        weapon4.fire();
+        weapon5.trackSprite(shooter2, -34, 110, true);
+        weapon5.fire();
+        spark4.trackSprite(shooter2, -137, 88, true);
+        spark4.fire();
+        spark5.trackSprite(shooter2, -32, 110, true);
+        spark5.fire();
+        firingTimer2 = game.time.now + 0;
+    }
+}
+
+function starBounceTween() {
+    var wobble = game.add.tween(stars);
+    wobble.to(
+      { y: (game.world.height - 350) - stars.height - 440 },
+       stars.SPEED, Phaser.Easing.Sinusoidal.InOut, true, 0,
+     Number.POSITIVE_INFINITY, true
+ );
+    wobble.start();
+}
+
+function gemBounceTween() {
+
+    var gemgo = game.add.tween(gems);
+    gemgo.to(
+      { y: (game.world.height - 400) - (gems.height - 50) },
+       gems.SPEED, Phaser.Easing.Sinusoidal.InOut, true, 0,
+     Number.POSITIVE_INFINITY, true
+ );
+    gemgo.start();
+}
+
+function en2BounceTween() {
+
+    var en2go = game.add.tween(enemies2);
+    en2go.to(
+      { y: (game.world.height -520) - (enemies2.height - 400) },
+       enemies2.SPEED, Phaser.Easing.Sinusoidal.InOut, true, 0,
+     Number.POSITIVE_INFINITY, true
+ );
+    en2go.start();
+}
+
+function laserBounceTween() {
+
+    var lasergo = game.add.tween(laserPickup);
+    lasergo.to(
+      { y: (game.world.height - 700) - (laserPickup.height - 50) },
+       laserPickup.SPEED, Phaser.Easing.Sinusoidal.InOut, true, 0,
+     Number.POSITIVE_INFINITY, true
+ );
+    lasergo.start();
+}
+
+function over() {
+    console.log('button over');
+}
+
+function out() {
+    console.log('button out');
+}
+
+function actionOnClick() {
+    //if (game.paused) {
+       // game.paused = false;
+    //} else {
+        game.paused = true;
+    //}
+    
+    //pauseButton.inputEnabled = false;
+}
+
+function unpause(event) {
+    game.paused = false;
+}
+
+function collectStar (player, star) {
+    star.kill();
+    score += 25500;
+    scoreText.text = 'SCORE: ' + score;
+}
+
+function ExperienceTween() {
+    tween4 = game.add.tween(exper).to({ y: (game.world.height - 940) - (exper.height - 400) }, 1400, Phaser.Easing.Elastic.InOut, true, 70000);
+    tween5 = game.add.tween(vgs).to({ y: (game.world.height - 940) - (vgs.height - 500) }, 1500, Phaser.Easing.Elastic.InOut, true, 80000);
+    tween6 = game.add.tween(king).to({ y: (game.world.height - 940) - (king.height - 960) }, 1700, Phaser.Easing.Elastic.InOut, true, 88000);
+    tween7 = game.add.tween(smash).to({ y: (game.world.height - 940) - (smash.height - 1000) }, 1800, Phaser.Easing.Elastic.InOut, true, 95000);
+    tween8 = game.add.tween(web).to({ y: (game.world.height - 940) - (web.height - 350) }, 1850, Phaser.Easing.Elastic.InOut, true, 106000);
+    tween9 = game.add.tween(qbj).to({ y: (game.world.height - 940) - (qbj.height - 990) }, 1900, Phaser.Easing.Elastic.InOut, true, 109000);
+    tween10 = game.add.tween(valley).to({ y: (game.world.height - 940) - (valley.height - 820) }, 1950, Phaser.Easing.Elastic.InOut, true, 107000);
+}
+
+function render() {
+
+    //var zone = game.camera.deadzone;
+
+    //game.context.fillStyle = 'rgba(255,0,0,0.6)';
+    //game.context.fillRect(zone.x, zone.y, zone.width, zone.height);
+
+    //game.debug.cameraInfo(game.camera, 32, 32);
+    //.debug.spriteCoords(player, 32, 500);
+    //game.debug.body(player);
+    //game.debug.body(enemyBullet);
+    //game.debug.body(enemies2);
+}
+
+</script>
+
+</body>
+</html>
